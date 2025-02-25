@@ -4,3 +4,4 @@ notebooks/*
 !notebooks/*.ipynb
 dags/*
 !dags/*.py
+venv/
