@@ -15,9 +15,11 @@ postgres_password = os.getenv('POSTGRES_PASSWORD')
 # Initialize Spark session with JDBC driver
 spark = SparkSession.builder \
     .appName("RuangDataProject") \
-    .config("spark.driver.extraClassPath", "/opt/airflow/jars/postgresql-42.2.18.jar") \
-    .config("spark.executor.extraClassPath", "/opt/airflow/jars/postgresql-42.2.18.jar") \
+    .config("spark.driver.extraClassPath", "/opt/postgresql-42.2.18.jar") \
     .getOrCreate()
+#    .config("spark.driver.extraClassPath", "/opt/airflow/jars/postgresql-42.2.18.jar") \
+#    .config("spark.executor.extraClassPath", "/opt/airflow/jars/postgresql-42.2.18.jar") \
+
 
 jdbc_url = f'jdbc:postgresql://{postgres_host}/{postgres_dw_db}'
 jdbc_properties = {
