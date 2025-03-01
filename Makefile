@@ -83,7 +83,7 @@ spark-submit-test:
 	@docker exec ${SPARK_WORKER_CONTAINER_NAME}-1 \
 		spark-submit \
 		--master spark://${SPARK_MASTER_HOST_NAME}:${SPARK_MASTER_PORT} \
-		/spark-scripts/sparksql-submit.py
+		/spark-scripts/spark-example.py
 
 spark-submit-write-postgres-test:
 	@docker exec ${SPARK_WORKER_CONTAINER_NAME}-1 \
@@ -128,6 +128,13 @@ postgres-create-table:
 	@docker exec -it ${POSTGRES_CONTAINER_NAME} psql -U ${POSTGRES_USER} -d ${POSTGRES_DW_DB} -f sql/ddl-retail.sql
 	@echo '==========================================================='
 
+postgres-create-table-new:
+	@echo '__________________________________________________________'
+	@echo 'Creating new tables...'
+	@echo '_________________________________________'
+	@docker exec -it ${POSTGRES_CONTAINER_NAME} psql -U ${POSTGRES_USER} -d ${POSTGRES_DW_DB} -f sql/ddl_furniture.sql
+	@echo '==========================================================='
+
 postgres-ingest-csv:
 	@echo '__________________________________________________________'
 	@echo 'Ingesting CSV...'
@@ -153,6 +160,11 @@ kafka-create:
 	@sleep 20
 	@echo '==========================================================='
 
+kafka-list-all-topic:
+	@docker exec ${KAFKA_CONTAINER_NAME} \
+		kafka-topics.sh --list \
+		--bootstrap-server localhost:9092 \
+
 kafka-create-test-topic:
 	@docker exec ${KAFKA_CONTAINER_NAME} \
 		kafka-topics.sh --create \
@@ -164,10 +176,10 @@ kafka-create-test-topic:
 kafka-create-topic:
 	@docker exec ${KAFKA_CONTAINER_NAME} \
 		kafka-topics.sh --create \
-		--partitions ${partition} \
+		--partitions 1 \
 		--replication-factor ${KAFKA_REPLICATION} \
 		--bootstrap-server localhost:9092 \
-		--topic ${topic}
+		--topic create_topic_2
 
 spark-produce:
 	@echo '__________________________________________________________'
@@ -184,6 +196,38 @@ spark-consume:
 	@docker exec ${SPARK_WORKER_CONTAINER_NAME}-1 \
 		spark-submit \
 		/spark-scripts/spark-event-consumer.py
+
+sparkstreaming-consume:
+	@echo '__________________________________________________________'
+	@echo 'Consuming fake events ...'
+	@echo '__________________________________________________________'
+	@docker exec ${SPARK_WORKER_CONTAINER_NAME}-1 \
+		spark-submit \
+		/spark-scripts/sparksql-stream-jdbc.py
+
+sparkstreaming-continuous-consume:
+	@echo '__________________________________________________________'
+	@echo 'Consuming fake events ...'
+	@echo '__________________________________________________________'
+	@docker exec ${SPARK_WORKER_CONTAINER_NAME}-1 \
+		spark-submit \
+		/spark-scripts/spark-event-consumer-continuous.py
+
+sparksqlstreaming-consume:
+	@echo '__________________________________________________________'
+	@echo 'Consuming fake events ...'
+	@echo '__________________________________________________________'
+	@docker exec ${SPARK_WORKER_CONTAINER_NAME}-1 \
+		spark-submit \
+		/spark-scripts/sparksqlstream.py
+
+sparksqlstreaming-continuous-consume:
+	@echo '__________________________________________________________'
+	@echo 'Consuming fake events ...'
+	@echo '__________________________________________________________'
+	@docker exec ${SPARK_WORKER_CONTAINER_NAME}-1 \
+		spark-submit \
+		/spark-scripts/sparksql-stream-continous.py
 
 datahub-create:
 	@echo '__________________________________________________________'

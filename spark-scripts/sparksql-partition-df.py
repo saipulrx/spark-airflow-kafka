@@ -5,17 +5,20 @@ spark = SparkSession.builder.appName("PartitionExample").getOrCreate()
 # Load data (replace with your dataset)
 data = [("2023", "01", "ProductA", 100),
         ("2023", "01", "ProductB", 200),
-        ("2023", "02", "ProductA", 150)]
+        ("2023", "02", "ProductA", 150),
+        ("2023", "02", "ProductB", 300),
+        ("2023", "03", "ProductB", 250),
+        ("2023", "03", "ProductA", 350)]
 columns = ["year", "month", "product", "revenue"]
 df = spark.createDataFrame(data, columns)
 
 # Write to Parquet with partitioning by year and month
 df.write.partitionBy("year", "month") \
   .mode("overwrite") \
-  .parquet("sales_partitioned.parquet")
+  .parquet("sales2_partitioned.parquet")
 
 # Read partitioned data
-partitioned_df = spark.read.parquet("sales_partitioned.parquet")
+partitioned_df = spark.read.parquet("sales2_partitioned.parquet")
 
 # Filter on partition columns (triggers partition pruning)
 df_filtered = partitioned_df.filter((partitioned_df.year == "2023") & (partitioned_df.month == "01"))

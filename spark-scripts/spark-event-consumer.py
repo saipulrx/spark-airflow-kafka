@@ -21,7 +21,7 @@ os.environ["PYSPARK_SUBMIT_ARGS"] = (
 )
 
 spark = (
-    pyspark.sql.SparkSession.builder.appName("DibimbingStreaming")
+    pyspark.sql.SparkSession.builder.appName("RuangDataProjectStreaming")
     .master(spark_host)
     .config("spark.jars.packages", "org.apache.spark:spark-sql-kafka-0-10_2.12:3.3.0")
     .config("spark.sql.shuffle.partitions", 4)
@@ -55,7 +55,7 @@ parsed_df = stream_df.selectExpr("CAST(value AS STRING)").select(from_json(col("
 avg_price_df = parsed_df.groupBy("furniture").agg(avg("price").alias("avg_price"))
 
 # Write the result to the console
-query = avg_price_df.writeStream.outputMode("update").format("console").trigger(processingTime="10 seconds").start()
+query = avg_price_df.writeStream.outputMode("update").format("console").trigger(processingTime="5 seconds").start()
 
 query.awaitTermination()
 
